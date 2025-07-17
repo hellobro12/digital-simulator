@@ -1,6 +1,9 @@
-import "@/styles/globals.css";
-import type { AppProps } from "next/app";
+import FlavorSimulator from "@/components/flavoursimulator";
 
-export default function App({ Component, pageProps }: AppProps) {
-  return <Component {...pageProps} />;
+export default function Home() {
+  return (
+    <main className="min-h-screen bg-gray-100 py-8 px-4">
+      <FlavorSimulator />
+    </main>
+  );
 }
