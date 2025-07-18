@@ -2,7 +2,8 @@
 import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Sparkles, UtensilsCrossed } from "lucide-react";
+import { Sparkles, UtensilsCrossed, Loader2 } from "lucide-react";
+import { motion } from "framer-motion";
 
 type Flavor = {
   name: string;
@@ -46,6 +47,16 @@ const flavors: Flavor[] = [
 
 export default function FlavorSimulator() {
   const [selectedFlavor, setSelectedFlavor] = useState<Flavor | null>(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleFlavorClick = (flavor: Flavor) => {
+    setLoading(true);
+    setSelectedFlavor(null); // Reset previous flavor
+    setTimeout(() => {
+      setSelectedFlavor(flavor);
+      setLoading(false);
+    }, 2000); // 2-second tasting delay
+  };
 
   return (
     <div className="p-6 max-w-4xl mx-auto space-y-6">
@@ -59,7 +70,7 @@ export default function FlavorSimulator() {
           <Card
             key={flavor.name}
             className={`cursor-pointer transition-transform duration-200 hover:scale-105 ${flavor.color}`}
-            onClick={() => setSelectedFlavor(flavor)}
+            onClick={() => handleFlavorClick(flavor)}
           >
             <CardContent className="p-4 text-center">
               <div className="text-5xl mb-2">{flavor.icon}</div>
@@ -70,17 +81,36 @@ export default function FlavorSimulator() {
         ))}
       </div>
 
-      {selectedFlavor && (
-        <div className="text-center mt-8 p-4 border rounded-lg bg-white shadow">
+      {loading && (
+        <div className="text-center mt-8 p-4 border rounded-lg bg-white shadow flex flex-col items-center">
+          <Loader2 className="w-6 h-6 animate-spin mb-2 text-gray-500" />
+          <motion.p
+            className="text-gray-700 text-lg"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ repeat: Infinity, duration: 1.2, ease: "easeInOut" }}
+          >
+            Tasting...
+          </motion.p>
+        </div>
+      )}
+
+      {selectedFlavor && !loading && (
+        <motion.div
+          className="text-center mt-8 p-4 border rounded-lg bg-white shadow"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.4 }}
+        >
           <h3 className="text-xl font-bold mb-2">
-            Simulating Taste: {selectedFlavor.name}
+            Simulated Taste: {selectedFlavor.name}
           </h3>
           <p className="text-gray-600 mb-4">{selectedFlavor.description}</p>
           <Button onClick={() => setSelectedFlavor(null)}>
             <Sparkles className="w-4 h-4 mr-2" />
             Taste Another
           </Button>
-        </div>
+        </motion.div>
       )}
     </div>
   );
